@@ -1,0 +1,5 @@
+#!/bin/sh
+## some killall commands to stop service may be
+
+## Add your cleanup tasks above this line
+echo "SERVICE ENDED: nginx-service"
