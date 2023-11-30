@@ -1,20 +1,5 @@
 #!/usr/bin/with-contenv bash
-#     _         _       ____    ____
-#    / \   _ __(_) __ _|___ \  |  _ \ _ __ ___
-#   / _ \ | '__| |/ _` | __) | | |_) | '__/ _ \
-#  / ___ \| |  | | (_| |/ __/  |  __/| | | (_) |
-# /_/   \_\_|  |_|\__,_|_____| |_|   |_|  \___/
-#
-# https://github.com/P3TERX/Aria2-Pro-Docker
-#
-# Copyright (c) 2020-2021 P3TERX <https://p3terx.com>
-#
-# This is free software, licensed under the MIT License.
-# See /LICENSE for more information.
 
-#!/bin/sh
-exec 2>&1 # pipe stderr to stdout
 echo "STARTED SERVICE: nginx-service"
-## Add your service task command below
-## Call your service with exec command
+
 exec nginx -c /config/nginx/nginx.conf -g 'daemon off;'

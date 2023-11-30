@@ -1,0 +1,4 @@
+#!/usr/bin/with-contenv bash
+
+echo "STARTED SERVICE: nmbd-service"
+exec nmbd --foreground --no-process-group --configfile=/config/samba/smb.conf

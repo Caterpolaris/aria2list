@@ -1,0 +1,22 @@
+#!/bin/bash
+
+create_samba_user() {
+  smb_username=$1
+  smb_passwd=$2
+
+  # Check if both SMB_USERNAME and SMB_PASSWORD are provided
+  if [[ -z "$smb_username" || -z "$smb_passwd" ]]; then
+    echo "Error: SMB_USERNAME and SMB_PASSWORD must be provided."
+    exit 1
+  fi
+
+  if ! getent group smbshare >/dev/null; then
+    addgroup smbshare
+  fi
+  adduser -H -s /sbin/nologin -G smbshare -D "$smb_username"
+  echo -e "$smb_passwd\n$smb_passwd\n" | smbpasswd -a -s -c /config/samba/smb.conf "$smb_username"
+  echo "SMB User Add success! $smb_username:$smb_passwd"
+}
+
+# Usage: ./script.sh SMB_USERNAME SMB_PASSWORD
+create_samba_user "$1" "$2"

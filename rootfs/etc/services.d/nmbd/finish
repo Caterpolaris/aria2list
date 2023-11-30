@@ -1,4 +1,4 @@
 #!/usr/bin/with-contenv bash
 
-echo "SERVICE ENDED: nginx-service"
+echo "SERVICE ENDED: nmbd-service"
 #s6-svscanctl -t /var/run/s6/services

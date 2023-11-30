@@ -1,0 +1,4 @@
+#!/usr/bin/with-contenv bash
+
+echo "SERVICE ENDED: samba-service"
+s6-svscanctl -t /var/run/s6/services

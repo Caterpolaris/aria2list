@@ -1,25 +1,16 @@
 #!/usr/bin/with-contenv bash
-#     _         _       ____    ____
-#    / \   _ __(_) __ _|___ \  |  _ \ _ __ ___
-#   / _ \ | '__| |/ _` | __) | | |_) | '__/ _ \
-#  / ___ \| |  | | (_| |/ __/  |  __/| | | (_) |
-# /_/   \_\_|  |_|\__,_|_____| |_|   |_|  \___/
-#
-# https://github.com/P3TERX/Aria2-Pro-Docker
-#
-# Copyright (c) 2020-2021 P3TERX <https://p3terx.com>
-#
-# This is free software, licensed under the MIT License.
-# See /LICENSE for more information.
 
 . /etc/init-base
 [[ ! -d ${CONFIG_DIR} ]] && mkdir /config
 [[ -z $(ls -A ${CONFIG_DIR}/aria2/) ]] && cp -R /config.example/aria2 /config
 [[ -z $(ls -A ${CONFIG_DIR}/nginx/) ]] && cp -R /config.example/nginx /config
-[[ -z $(ls -A ${CONFIG_DIR}/alist/) ]] && cp -R /config.example/alist /config
+[[ -z $(ls -A ${CONFIG_DIR}/samba/) ]] && cp -R /config.example/samba /config
 
+chmod +x /usr/bin/addsmbuser
+mkdir -p /config/alist
+mkdir -p /var/log/samba/
 mkdir -p "${DOWNLOAD_DIR}"
-
+chown -R p3terx:p3terx /config/alist
 PROFILES="
 aria2.conf
 script.conf
@@ -31,6 +22,7 @@ LICENSE
 "
 
 DOWNLOAD_PROFILE
+
 
 [[ ! -f "${ARIA2_CONF_DIR}/aria2.session" ]] && {
     rm -rf "${ARIA2_CONF_DIR}/aria2.session"
@@ -45,5 +37,7 @@ if ! [[ "${UPDATE_TRACKERS}" = "false" || "${UPDATE_TRACKERS}" = "disable" ]]; t
 else
     touch /etc/services.d/crond/down
 fi
+
+CREATE_SAMBA_USER
 
 exit 0

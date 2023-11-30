@@ -1,0 +1,4 @@
+#!/usr/bin/with-contenv bash
+
+echo "STARTED SERVICE: samba-service"
+exec smbd --foreground --no-process-group --debug-stdout --configfile=/config/samba/smb.conf

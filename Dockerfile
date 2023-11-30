@@ -1,23 +1,18 @@
-#     _         _       ____    ____
-#    / \   _ __(_) __ _|___ \  |  _ \ _ __ ___
-#   / _ \ | '__| |/ _` | __) | | |_) | '__/ _ \
-#  / ___ \| |  | | (_| |/ __/  |  __/| | | (_) |
-# /_/   \_\_|  |_|\__,_|_____| |_|   |_|  \___/
+
+# https://github.com/Caterpolaris/aria2list
 #
-# https://github.com/P3TERX/Aria2-Pro-Docker
-#
-# Copyright (c) 2020-2021 P3TERX <https://p3terx.com>
 #
 # This is free software, licensed under the MIT License.
 # See /LICENSE for more information.
 # 添加alist nginx(webdav)
 
-FROM p3terx/s6-alpine
+FROM caterpolaris/s6alpine
 
 COPY rootfs /
 
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
-    && apk update && apk add --no-cache nginx jq findutils\
+    && apk update && apk add --no-cache curl bash wget unzip nginx jq findutils samba\
+    && rm -rf /var/cache/apk/* \
     && mkdir -p /run/nginx && touch /run/nginx/nginx.pid \
     && curl -fsSL ${proxyUrl}https://raw.githubusercontent.com/P3TERX/aria2-builder/master/aria2-install.sh | bash \
     && wget ${proxyUrl}https://github.com/alist-org/alist/releases/download/$(curl -Ls "https://api.github.com/repos/alist-org/alist/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')/alist-linux-musl-amd64.tar.gz \
@@ -28,10 +23,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     && mkdir /web \
     && ariangVer=`curl -Ls "${proxyUrl}https://api.github.com/repos/mayswind/AriaNg/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'` && wget ${proxyUrl}https://github.com/mayswind/AriaNg/releases/download/${ariangVer}/AriaNg-${ariangVer}-AllInOne.zip \
     && unzip AriaNg-${ariangVer}-AllInOne.zip -d /web \
-    && rm -rf AriaNg-${ariangVer}-AllInOne.zip \
-    && [[ -L /usr/bin/unzip ]] && mv /usr/bin/unzip /usr/bin/unzip.bak\
-    && curl -fsSL https://rclone.org/install.sh | bash \
-    && [[ -L /usr/bin/unzip.bak ]] && mv /usr/bin/unzip.bak /usr/bin/unzip
+    && rm -rf AriaNg-${ariangVer}-AllInOne.zip
 
 ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=1 \
     RCLONE_CONFIG=/config/rclone/rclone.conf \
@@ -47,11 +39,17 @@ ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=1 \
     UMASK_SET=022 \
     SPECIAL_MODE=""
 
+# 137 138 nmbd
+# 139 445 smbd
 # 5244 alist
 # 6880 ariaNg
 # 6800 aria2c rpc
 # 6888 aria2c rpc
 EXPOSE \
+    137/udp \
+    138/udp \
+    139 \
+    445 \
     5244 \
     6880 \
     6800 \
